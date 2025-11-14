@@ -578,41 +578,41 @@
             background: #dbeafe;
             color: #1e40af;
         }
+.status-pending { background-color: orange; color: white; }
+.status-approved { background-color: #28a745; color: white; }
+.status-rejected { background-color: #dc3545; color: white; }
     </style>
 </head>
 <body>
-    <!-- Landing Page -->
-    <div id="landingPage">
-        <div class="container">
-            <div class="hero">
-                <h1>Tooting GP Practice</h1>
-                <p>Smart Appointment Booking System</p>
+ 
+        <!-- Login Page -->
+<div id="landingPage">
+    <div class="container" style="max-width: 400px; margin-top: 80px;">
+        
+        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <h2 style="text-align:center; margin-bottom: 20px;">Login</h2>
+
+            <div class="form-group">
+                <label>Username</label>
+                <input id="loginUsername" type="text" 
+                       style="width:100%; padding:12px; border:1px solid #ccc; border-radius:8px;">
             </div>
-            
-            <div class="cards-grid">
-                <div class="card" onclick="showPatientPortal()">
-                    <div class="card-icon blue">📅</div>
-                    <h2>Book Appointment</h2>
-                    <p>Book, reschedule or cancel your appointments online</p>
-                    <span class="card-link">Enter →</span>
-                </div>
-                
-                <div class="card" onclick="showPatientPortal()">
-                    <div class="card-icon green">📋</div>
-                    <h2>My Health</h2>
-                    <p>View appointments and access medical records</p>
-                    <span class="card-link">View →</span>
-                </div>
-                
-                <div class="card" onclick="showAdminDashboard()">
-                    <div class="card-icon purple">⚙️</div>
-                    <h2>Admin Portal</h2>
-                    <p>Staff and administrator access</p>
-                    <span class="card-link">Login →</span>
-                </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input id="loginPassword" type="password" 
+                       style="width:100%; padding:12px; border:1px solid #ccc; border-radius:8px;">
             </div>
+
+            <button onclick="login()" 
+                    class="btn-primary" 
+                    style="width:100%; margin-top:10px;">
+                Login
+            </button>
         </div>
+
     </div>
+</div>
     
     <!-- Patient Portal -->
     <div id="patientPortal" class="hidden">
@@ -633,7 +633,7 @@
                 <h2 class="welcome-title">Welcome back, John</h2>
                 
                 <div class="quick-actions">
-                    <button class="action-btn" onclick="showBookingFlow()">
+                    <button class="action-btn" onclick="startAppointmentProcess()">
                         <div class="action-icon">📅</div>
                         <div>Book Appointment</div>
                     </button>
@@ -641,7 +641,7 @@
                         <div class="action-icon">🩺</div>
                         <div>Symptom Checker</div>
                     </button>
-                    <button class="action-btn purple">
+                    <button class="action-btn purple" onclick="openPrescriptions()">
                         <div class="action-icon">💊</div>
                         <div>Prescriptions</div>
                     </button>
@@ -680,7 +680,7 @@
                     </div>
                 </div>
             </div>
-            
+ 
             <!-- Booking Flow -->
             <div id="bookingFlow" class="hidden">
                 <div class="progress-bar">
@@ -807,12 +807,11 @@
                             <p style="color: #059669;">Cold, cough, minor aches, allergies</p>
                         </div>
                         
-                        <div style="background: #dbeafe; padding: 20px; border-radius: 8px; margin-bottom: 15px; cursor: pointer;" onclick="showBookingFlow()">
-                            <h3 style="color: #1e40af; margin-bottom: 10px;">👨‍⚕️ GP Appointment</h3>
-                            <p style="color: #2563eb;">Ongoing symptoms, need medical advice</p>
-                        </div>
-                        
-                        <div style="background: #ede9fe; padding: 20px; border-radius: 8px; margin-bottom: 15px; cursor: pointer;" onclick="showNotification('Mental health support available', 'info')">
+                        <div style="background: #dbeafe; padding: 20px; border-radius: 8px; margin-bottom: 15px; cursor: pointer;" onclick="goFromSymptomCheckerToBooking()">
+    <h3 style="color: #1e40af; margin-bottom: 10px;">👨‍⚕️ GP Appointment</h3>
+    <p style="color: #2563eb;">Ongoing symptoms, need medical advice</p>
+</div>                    
+                        <div style="background: #ede9fe; padding: 20px; border-radius: 8px; margin-bottom: 15px; cursor: pointer;" onclick="showMentalHealthPage()">
                             <h3 style="color: #5b21b6; margin-bottom: 10px;">🧠 Mental Health</h3>
                             <p style="color: #7c3aed;">Anxiety, depression, stress support</p>
                         </div>
@@ -822,6 +821,79 @@
                 </div>
             </div>
         </div>
+
+<!-- Mental Health Page -->
+<div id="mentalHealthPage" class="hidden">
+    <div style="max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px;">
+        <h2 class="section-title">🧠 Mental Health Support</h2>
+        <p style="margin-bottom: 20px;">Select the option that best describes your situation:</p>
+
+        <!-- TRIAGE OPTIONS -->
+        <div style="space-y: 15px;">
+
+            <!-- CRISIS -->
+            <div style="background: #fee2e2; padding: 20px; border-radius: 8px; margin-bottom: 15px; cursor: pointer;"
+                 onclick="showMentalHealthOutcome('crisis')">
+                <h3 style="color: #991b1b; margin-bottom: 10px;">🚨 I'm in crisis or feel unsafe</h3>
+                <p style="color: #dc2626;">Thoughts of self-harm, feeling at risk, or immediate danger</p>
+            </div>
+
+            <!-- URGENT BUT NOT CRISIS -->
+            <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin-bottom: 15px; cursor: pointer;"
+                 onclick="showMentalHealthOutcome('urgent')">
+                <h3 style="color: #b45309; margin-bottom: 10px;">⚠️ I need urgent support</h3>
+                <p style="color: #92400e;">Severe anxiety, panic, or worsening symptoms</p>
+            </div>
+
+            <!-- ROUTINE HELP -->
+            <div style="background: #dbeafe; padding: 20px; border-radius: 8px; margin-bottom: 15px; cursor: pointer;"
+                 onclick="showMentalHealthOutcome('routine')">
+                <h3 style="color: #1e40af; margin-bottom: 10px;">💬 I want general mental health help</h3>
+                <p style="color: #2563eb;">Anxiety, low mood, stress, sleep problems</p>
+            </div>
+
+        </div>
+
+        <button class="btn-secondary" style="margin-top: 20px;" onclick="backToPatientHome()">← Back to Home</button>
+    </div>
+</div>
+
+<!-- Prescriptions Page -->
+<div id="prescriptionsPage" class="hidden">
+    <div style="max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px;">
+        <h2 class="section-title">💊 Your Prescriptions</h2>
+
+        <!-- Repeat Prescriptions -->
+        <h3 style="margin-top: 20px; margin-bottom: 10px;">Current Repeat Prescriptions</h3>
+        <div id="repeatPrescriptionsList" style="margin-bottom: 25px;"></div>
+
+        <!-- One-off Prescriptions -->
+        <h3 style="margin-bottom: 10px;">Recent One-off Prescriptions</h3>
+        <div id="acutePrescriptionsList" style="margin-bottom: 25px;"></div>
+
+        <!-- Request New Medication -->
+        <h3 style="margin-bottom: 10px;">Request New Medication</h3>
+        <div style="background:#f9fafb; padding: 15px; border-radius:8px; margin-bottom: 20px;">
+            <label><strong>Medication name</strong></label>
+            <input id="requestMedName" type="text" placeholder="e.g. Omeprazole 20mg"
+                   style="width:100%; padding:12px; border:1px solid #ccc; border-radius:8px; margin-top:5px;">
+
+            <label style="margin-top:15px; display:block;"><strong>Notes (optional)</strong></label>
+            <textarea id="requestMedNotes" rows="3" placeholder="Reason or additional information"
+                      style="width:100%; padding:12px; border:1px solid #ccc; border-radius:8px;"></textarea>
+
+            <button class="btn-primary" style="margin-top: 15px;" onclick="submitPrescriptionRequest()">
+                Submit Request
+            </button>
+        </div>
+
+        <!-- Request Status -->
+        <h3 style="margin-bottom: 10px;">Your Requests</h3>
+        <div id="prescriptionRequestsList"></div>
+
+        <button class="btn-secondary" style="margin-top: 20px;" onclick="backToPatientHome()">← Back to Home</button>
+    </div>
+</div>
     </div>
     
     <!-- Admin Dashboard -->
@@ -945,25 +1017,260 @@
     <script>
         let selectedType = '';
         let currentStep = 1;
-        
+
+        // Demo users
+const users = [
+    { username: "john", password: "1234", role: "patient" },
+    { username: "admin", password: "admin123", role: "admin" }
+];
+
+// Shared appointment storage
+let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+
+function saveAppointments() {
+    localStorage.setItem("appointments", JSON.stringify(appointments));
+}
+
         function showPatientPortal() {
+loadPatientAppointments();
             document.getElementById('landingPage').classList.add('hidden');
             document.getElementById('patientPortal').classList.remove('hidden');
             document.getElementById('adminDashboard').classList.add('hidden');
         }
+
+function loadPatientAppointments() {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    const userAppointments = appointments.filter(a => a.patient === currentUser.username);
+
+    const container = document.getElementById("patientAppointmentsList");
+    if (!container) return; // in case portal not rendered yet
+
+    container.innerHTML = "";
+
+    if (userAppointments.length === 0) {
+        container.innerHTML = "<p>You have no appointments yet.</p>";
+        return;
+    }
+
+    userAppointments.forEach(app => {
+        const card = document.createElement("div");
+        card.className = "appointment-card";
+        card.innerHTML = `
+            <h3>${app.type} Appointment</h3>
+            <p><strong>Doctor:</strong> ${app.doctor}</p>
+            <p><strong>Date:</strong> ${app.date}</p>
+            <p><strong>Time:</strong> ${app.time}</p>
+            <p><strong>Status:</strong> ${app.status}</p>
+        `;
+        container.appendChild(card);
+    });
+}
         
         function showAdminDashboard() {
+loadAdminAppointments();
             document.getElementById('landingPage').classList.add('hidden');
             document.getElementById('patientPortal').classList.add('hidden');
             document.getElementById('adminDashboard').classList.remove('hidden');
         }
+
+function loadAdminAppointments() {
+    const table = document.getElementById("appointmentsTableBody");
+    table.innerHTML = "";
+
+    appointments.forEach((app, index) => { 
+        const row = document.createElement("tr");
+        row.innerHTML = `
+    <td>${app.time}</td>
+    <td>${app.patient}</td>
+    <td><span class="appointment-type">${app.type}</span></td>
+    <td>${app.doctor}</td>
+    <td><span class="status-badge status-${app.status}">${app.status}</span></td>
+    <td>
+        ${app.status === "pending" ? `
+            <button class="btn-approve" onclick="approveAppointment(${index})">Approve</button>
+            <button class="btn-reject" onclick="rejectAppointment(${index})">Reject</button>
+        ` : ""}
+    </td>
+`;
+        table.appendChild(row);
+    });
+}
+
+document.getElementById('date').value = new Date().toISOString().split('T')[0];
+document.getElementById('date').addEventListener("change", function () {
+    loadAvailableTimes();
+});
+function approveAppointment(index) {
+    appointments[index].status = "approved";
+    saveAppointments();
+    loadAdminAppointments();
+    loadPatientAppointments();
+}
+
+function rejectAppointment(index) {
+    appointments[index].status = "rejected";
+    saveAppointments();
+    loadAdminAppointments();
+    loadPatientAppointments();
+}
+
+const allTimeSlots = [
+    "09:00", "09:30", "10:00", "10:30",
+    "11:00", "11:30", "12:00",
+    "14:00", "14:30", "15:00", "15:30",
+    "16:00"
+];
+
+function getAvailableSlots(date) {
+
+    // Find all appointments for that date
+    const booked = appointments
+        .filter(a => a.date === date && a.status !== "rejected")
+        .map(a => a.time);
+
+    // Remove booked times from available list
+    return allTimeSlots.filter(t => !booked.includes(t));
+}
+
+function loadAvailableTimes() {
+    const date = document.getElementById('date').value;
+    const select = document.getElementById('time');
+
+    const available = getAvailableSlots(date);
+
+    select.innerHTML = "";
+    available.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t;
+        opt.textContent = t;
+        select.appendChild(opt);
+    });
+}
+
+loadAvailableTimes();
         
         function backToLanding() {
             document.getElementById('landingPage').classList.remove('hidden');
             document.getElementById('patientPortal').classList.add('hidden');
             document.getElementById('adminDashboard').classList.add('hidden');
         }
-        
+
+function startAppointmentProcess() {
+    document.getElementById('patientHome').classList.add('hidden');
+    document.getElementById('bookingFlow').classList.add('hidden');
+    document.getElementById('symptomChecker').classList.remove('hidden');
+}        
+
+let prescriptions = JSON.parse(localStorage.getItem("prescriptions")) || {
+    repeat: [
+        { name: "Atorvastatin 20mg", instructions: "Take one daily", status: "active", lastIssued: "2025-01-10" },
+        { name: "Salbutamol Inhaler", instructions: "2 puffs when needed", status: "active", lastIssued: "2024-12-28" }
+    ],
+    acute: [
+        { name: "Amoxicillin 500mg", issued: "2025-01-05", status: "completed" }
+    ],
+    requests: []
+};
+
+function savePrescriptions() {
+    localStorage.setItem("prescriptions", JSON.stringify(prescriptions));
+}
+
+function openPrescriptions() {
+    document.getElementById('patientHome').classList.add('hidden');
+    document.getElementById('symptomChecker').classList.add('hidden');
+    document.getElementById('bookingFlow').classList.add('hidden');
+    document.getElementById('prescriptionsPage').classList.remove('hidden');
+
+    loadPrescriptions();
+}
+
+function loadPrescriptions() {
+
+    // Repeat prescriptions
+    const repeatContainer = document.getElementById("repeatPrescriptionsList");
+    repeatContainer.innerHTML = "";
+    prescriptions.repeat.forEach(med => {
+        const div = document.createElement("div");
+        div.className = "appointment-item";
+        div.innerHTML = `
+            <div>
+                <h4>${med.name}</h4>
+                <p>${med.instructions}</p>
+                <p><strong>Last issued:</strong> ${med.lastIssued}</p>
+            </div>
+            <button class="btn-small btn-reschedule" onclick="requestRepeat('${med.name}')">Request Again</button>
+        `;
+        repeatContainer.appendChild(div);
+    });
+
+    // Acute prescriptions
+    const acuteContainer = document.getElementById("acutePrescriptionsList");
+    acuteContainer.innerHTML = "";
+    prescriptions.acute.forEach(med => {
+        const div = document.createElement("div");
+        div.className = "appointment-item";
+        div.innerHTML = `
+            <div>
+                <h4>${med.name}</h4>
+                <p><strong>Issued:</strong> ${med.issued}</p>
+            </div>
+        `;
+        acuteContainer.appendChild(div);
+    });
+
+    // Requests
+    const reqContainer = document.getElementById("prescriptionRequestsList");
+    reqContainer.innerHTML = "";
+    prescriptions.requests.forEach(req => {
+        const div = document.createElement("div");
+        div.className = "appointment-item";
+        div.innerHTML = `
+            <div>
+                <h4>${req.name}</h4>
+                <p>${req.notes || "No notes provided"}</p>
+            </div>
+            <span class="status-badge status-${req.status}">${req.status}</span>
+        `;
+        reqContainer.appendChild(div);
+    });
+}
+
+function requestRepeat(name) {
+    prescriptions.requests.push({
+        name,
+        notes: "(repeat request)",
+        status: "pending"
+    });
+    savePrescriptions();
+    loadPrescriptions();
+    showNotification("Repeat prescription request sent!", "success");
+}
+
+function submitPrescriptionRequest() {
+    const name = document.getElementById("requestMedName").value.trim();
+    if (!name) {
+        showNotification("Medication name is required", "error");
+        return;
+    }
+
+    const notes = document.getElementById("requestMedNotes").value.trim();
+
+    prescriptions.requests.push({
+        name,
+        notes,
+        status: "pending"
+    });
+
+    savePrescriptions();
+    loadPrescriptions();
+    showNotification("Your medication request has been submitted!", "success");
+
+    document.getElementById("requestMedName").value = "";
+    document.getElementById("requestMedNotes").value = "";
+}
+
         function showBookingFlow() {
             document.getElementById('patientHome').classList.add('hidden');
             document.getElementById('bookingFlow').classList.remove('hidden');
@@ -976,12 +1283,53 @@
             document.getElementById('bookingFlow').classList.add('hidden');
             document.getElementById('symptomChecker').classList.remove('hidden');
         }
+
+function showMentalHealthPage() {
+    document.getElementById('patientHome').classList.add('hidden');
+    document.getElementById('symptomChecker').classList.add('hidden');
+    document.getElementById('bookingFlow').classList.add('hidden');
+    document.getElementById('prescriptionsPage').classList.add('hidden');
+    document.getElementById('mentalHealthPage').classList.remove('hidden');
+}
+
+function showMentalHealthOutcome(level) {
+    let msg = "";
+
+    if (level === "crisis") {
+        msg = `🚨 Immediate Help Required
+
+If you feel unsafe or at risk of harming yourself, call 999 or go to A&E immediately.`;
+    }
+
+    if (level === "urgent") {
+        msg = `⚠️ Urgent Mental Health Support
+
+Call NHS 111 and choose option 2 for 24/7 urgent mental health advice.`;
+    }
+
+    if (level === "routine") {
+        msg = `💬 Talking Therapies
+
+You can self-refer to NHS Talking Therapies for help with anxiety, stress or low mood.
+
+If you'd prefer, you can also book a GP appointment.`;
+    }
+
+    showNotification(msg, "info");
+}
+
+function goFromSymptomCheckerToBooking() {
+    document.getElementById('symptomChecker').classList.add('hidden');
+    showBookingFlow();
+}
         
         function backToPatientHome() {
-            document.getElementById('patientHome').classList.remove('hidden');
-            document.getElementById('bookingFlow').classList.add('hidden');
-            document.getElementById('symptomChecker').classList.add('hidden');
-        }
+    document.getElementById('patientHome').classList.remove('hidden');
+    document.getElementById('bookingFlow').classList.add('hidden');
+    document.getElementById('symptomChecker').classList.add('hidden');
+    document.getElementById('prescriptionsPage').classList.add('hidden'); // ⭐ FIX
+    document.getElementById('mentalHealthPage').classList.add('hidden');
+}
         
         function selectType(element, type) {
             document.querySelectorAll('.type-option').forEach(opt => {
@@ -1050,55 +1398,36 @@
         }
         
         function confirmBooking() {
-            showNotification('✅ Appointment booked successfully! You will receive an SMS confirmation.', 'success');
-            
-            // Add new appointment to the list
-            const appointmentsList = document.getElementById('appointmentsList');
-            const newAppointment = document.createElement('div');
-            newAppointment.className = 'appointment-item';
-            newAppointment.innerHTML = `
-                <div class="appointment-info">
-                    <h4>Dr. Sarah Johnson</h4>
-                    <p>${document.getElementById('date').value || 'Monday, 20 Jan 2025'} at ${document.getElementById('time').value || '10:00'}</p>
-                    <span class="appointment-type type-${selectedType || 'in-person'}">${selectedType || 'In-person'}</span>
-                </div>
-                <div class="appointment-actions">
-                    <button class="btn-small btn-reschedule" onclick="showNotification('Appointment rescheduled', 'info')">Reschedule</button>
-                    <button class="btn-small btn-cancel" onclick="cancelAppointment(this)">Cancel</button>
-                </div>
-            `;
-            appointmentsList.insertBefore(newAppointment, appointmentsList.firstChild);
-            
-            // Reset and go back to home
-            selectedType = '';
-            currentStep = 1;
-            backToPatientHome();
-        }
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    
+    const appointment = {
+        patient: currentUser.username,
+        type: selectedType,
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        doctor: "Dr. Sarah Johnson",
+        status: "pending"
+    };
+
+    // Save appointment
+    appointments.push(appointment);
+    saveAppointments();
+
+    // Reset booking flow UI
+    document.getElementById('bookingFlow').classList.add('hidden');
+    showNotification('Appointment booked successfully!', 'success');
+
+    // Reload patient appointments list
+    loadPatientAppointments();
+    backToPatientHome(); 
+}
         
         function cancelAppointment(button) {
             const appointmentItem = button.closest('.appointment-item');
             appointmentItem.remove();
             showNotification('Appointment cancelled', 'info');
         }
-        
-        function approveAppointment(button) {
-            const row = button.closest('tr');
-            const statusCell = row.querySelector('.status-badge');
-            statusCell.className = 'status-badge status-confirmed';
-            statusCell.textContent = 'Confirmed';
-            
-            const actionCell = row.querySelector('td:last-child');
-            actionCell.innerHTML = '<button class="btn-approve">View</button>';
-            
-            showNotification('Appointment approved', 'success');
-        }
-        
-        function rejectAppointment(button) {
-            const row = button.closest('tr');
-            row.remove();
-            showNotification('Appointment rejected', 'info');
-        }
-        
+                    
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -1109,6 +1438,27 @@
                 notification.remove();
             }, 4000);
         }
+function login() {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (!user) {
+        showNotification("Invalid username or password", "error");
+        return;
+    }
+
+    // Store user session
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+    // Redirect based on role
+    if (user.role === "patient") {
+        showPatientPortal();
+    } else if (user.role === "admin") {
+        showAdminDashboard();
+    }
+}
     </script>
 </body>
 </html>
