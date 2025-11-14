@@ -645,10 +645,10 @@
                         <div class="action-icon">💊</div>
                         <div>Prescriptions</div>
                     </button>
-                    <button class="action-btn orange">
-                        <div class="action-icon">💬</div>
-                        <div>eConsult</div>
-                    </button>
+                    <button class="action-btn purple" onclick="openMessagesPage()">
+    <div class="action-icon">✉️</div>
+    <div>Messages</div>
+</button>
                 </div>
                 
                 <div class="appointments-section">
@@ -680,7 +680,50 @@
                     </div>
                 </div>
             </div>
- 
+
+ <!-- Messages Page (Patient) -->
+<div id="messagesPage" class="hidden">
+  <div style="max-width:800px; margin:0 auto; background:white; padding:30px; border-radius:12px;">
+    <h2 class="section-title">💬 Secure Messages</h2>
+    <p style="margin-bottom:12px;">
+      Use this for non-urgent queries (admin, repeat prescriptions, test results). We aim to reply within 48 hours.
+      For emergencies call 999 or NHS 111 (option 2).
+    </p>
+
+    <div class="form-group">
+      <label>Category</label>
+      <select id="msgCategory" style="width:100%; padding:12px; border-radius:8px; margin-top:6px;">
+        <option value="admin">Admin (appointments, documents)</option>
+        <option value="prescription">Prescription (repeat requests)</option>
+        <option value="test">Test Result (non-urgent)</option>
+        <option value="symptom">Symptom (non-urgent)</option>
+      </select>
+    </div>
+
+    <div id="triageArea" class="form-group"></div>
+
+    <div class="form-group">
+      <label>Message</label>
+      <textarea id="msgBody" rows="5" maxlength="2000" placeholder="Briefly describe your request..." style="padding:12px; border-radius:8px;"></textarea>
+      <div style="font-size:12px; color:#666; margin-top:6px;">Max 2000 characters</div>
+    </div>
+
+    <div style="margin-top:10px;">
+      <label><input type="checkbox" id="consentBox"> I consent to this message being stored in my medical record.</label>
+    </div>
+
+    <div style="margin-top:16px; display:flex; gap:10px;">
+      <button class="btn-primary" onclick="sendMessage()">Send Message</button>
+      <button class="btn-secondary" onclick="backToPatientHome()">Cancel</button>
+    </div>
+
+    <hr style="margin:20px 0;">
+    <h3 class="section-title">Your recent messages</h3>
+    <div id="patientMessagesList"></div>
+<button class="btn-secondary" style="margin-top: 20px;" onclick="backToPatientHome()">← Back to Home</button>
+  </div>
+</div>
+
             <!-- Booking Flow -->
             <div id="bookingFlow" class="hidden">
                 <div class="progress-bar">
@@ -905,10 +948,10 @@
                         <span style="font-size: 28px;">⚙️</span>
                         <span class="header-title">Admin Dashboard</span>
                     </div>
-                    <div>
-                        <span style="margin-right: 20px; color: #666;">Dr. Sarah Johnson</span>
-                        <button class="btn-secondary" onclick="backToLanding()">Sign Out</button>
-                    </div>
+                    <div style="text-align: right; display:flex; gap:10px; justify-content:flex-end; align-items:center;">
+    <button class="btn-secondary" onclick="openAdminMessages()">📨 Inbox</button>
+    <button class="btn-secondary" onclick="logout()">Sign Out</button>
+</div>
                 </div>
             </div>
         </header>
@@ -923,7 +966,10 @@
                     <div class="stat-value">24</div>
                     <div class="stat-change positive">+12% from yesterday</div>
                 </div>
-                
+<button class="action-btn purple" onclick="showStaffInbox()">
+  <div class="action-icon">✉️</div>
+  <div>Messages Inbox</div>
+</button>       
                 <div class="stat-card">
                     <div class="stat-header">
                         <span class="stat-label">DNA Rate</span>
@@ -951,7 +997,57 @@
                     <div class="stat-change positive">Since app launch</div>
                 </div>
             </div>
-            
+
+<!-- ADMIN MESSAGES PAGE -->
+<div id="adminMessagesPage" class="hidden">
+  <div style="max-width:900px; margin:0 auto; background:white; padding:30px; border-radius:12px;">
+    <h2 class="section-title">📨 All Open Messages</h2>
+    <p style="margin-bottom:20px;">These are all active chats from patients. Click any to open and reply.</p>
+
+    <div id="adminMessagesList"></div>
+
+    <button class="btn-secondary" style="margin-top:20px;" onclick="backToAdminHome()">← Back to Dashboard</button>
+  </div>
+</div>
+
+            <!-- Staff Inbox (Admin Dashboard) -->
+<div id="staffInbox" class="hidden" style="margin-top:20px;">
+  <div style="background:white; padding:20px; border-radius:8px;">
+    <h3 class="section-title">Inbox — Messages</h3>
+
+    <div style="display:flex; gap:10px; margin-bottom:12px;">
+      <select id="staffQueueFilter" onchange="loadStaffInbox()" style="padding:8px;">
+        <option value="all">All queues</option>
+        <option value="admin">Admin</option>
+        <option value="prescription">Prescription</option>
+        <option value="test">Test Result</option>
+        <option value="symptom">Symptom</option>
+      </select>
+      <button class="btn-secondary" onclick="showStaffInbox()">Open Inbox</button>
+    </div>
+
+    <div id="staffMessagesList" style="max-height:320px; overflow:auto;"></div>
+
+    <div id="staffMessageDetail" style="display:none; margin-top:12px; border-top:1px solid #eee; padding-top:12px;">
+      <div id="staffDetailContent"></div>
+      <div style="margin-top:10px;">
+        <select id="replyTemplate">
+          <option value="">— choose template —</option>
+          <option value="prescApproved">Prescription approved: "Your repeat has been authorised and will be sent to {pharmacy}."</option>
+          <option value="needMoreInfo">Request more info: "Could you tell us how long you've had symptoms and any medications you're taking?"</option>
+          <option value="adminReply">Admin: "We've updated your appointment to {date} {time}."</option>
+        </select>
+      </div>
+      <textarea id="staffReplyBody" rows="4" style="width:100%; margin-top:8px; padding:10px;"></textarea>
+      <div style="margin-top:8px; display:flex; gap:8px;">
+        <button class="btn-primary" onclick="staffReply()">Send Reply</button>
+        <button class="btn-secondary" onclick="closeStaffDetail()">Close</button>
+        <button class="btn-secondary" onclick="assignToMe()">Assign to me</button>
+        <button class="btn-secondary" onclick="closeMessageStaff()">Mark Closed</button>
+      </div>
+    </div>
+  </div>
+</div>
             <div class="appointments-table">
                 <div class="table-header">
                     <h3 class="section-title" style="margin: 0;">Today's Appointments</h3>
@@ -1066,6 +1162,391 @@ function loadPatientAppointments() {
         container.appendChild(card);
     });
 }
+
+/* ---------- Messaging Phase 1 (localStorage-based MVP) ---------- */
+const MESSAGES_KEY = 'app_messages_v1';
+const EVENTS_KEY = 'app_message_events_v1';
+
+// helper
+function nowISO() { return new Date().toISOString(); }
+function genId() { return 'm-' + Date.now() + '-' + Math.floor(Math.random()*9999); }
+
+// Basic rate limiter: max 3 messages in last 7 days
+function tooManyRecentMessages(patient) {
+  const msgs = JSON.parse(localStorage.getItem(MESSAGES_KEY) || '[]');
+  const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const recent = msgs.filter(m => m.patient === patient && new Date(m.created_at).getTime() > cutoff);
+  return recent.length >= 3;
+}
+
+function saveMessages(arr) { localStorage.setItem(MESSAGES_KEY, JSON.stringify(arr || [])); }
+function loadMessages() { return JSON.parse(localStorage.getItem(MESSAGES_KEY) || '[]'); }
+function saveEvents(arr) { localStorage.setItem(EVENTS_KEY, JSON.stringify(arr || [])); }
+function loadEvents(){ return JSON.parse(localStorage.getItem(EVENTS_KEY) || '[]'); }
+
+function appendEvent(messageId, actorType, actorId, event, details={}) {
+  const evts = loadEvents();
+  evts.push({ id:'e-'+Date.now(), messageId, actorType, actorId, event, details, ts: nowISO() });
+  saveEvents(evts);
+}
+
+/* --- UI openers --- */
+function openMessagesPage() {
+  // hide other patient pages
+  document.getElementById('patientHome').classList.add('hidden');
+  document.getElementById('bookingFlow').classList.add('hidden');
+  document.getElementById('symptomChecker').classList.add('hidden');
+  document.getElementById('prescriptionsPage')?.classList.add('hidden');
+  document.getElementById('mentalHealthPage')?.classList.add('hidden');
+
+  document.getElementById('messagesPage').classList.remove('hidden');
+  renderTriageForCategory(); // default
+  loadPatientMessages();
+}
+
+/* create triage UI based on category */
+document.getElementById('msgCategory')?.addEventListener('change', renderTriageForCategory);
+function renderTriageForCategory() {
+  const cat = document.getElementById('msgCategory').value;
+  const area = document.getElementById('triageArea');
+  if (!area) return;
+  area.innerHTML = '';
+
+  // Common red-flag detector UI for 'symptom' and 'test'
+  if (cat === 'symptom') {
+    area.innerHTML = `
+      <label><strong>Do you have any of the following?</strong></label>
+      <div><label><input type="checkbox" id="tf_suicidal"> Thoughts of self-harm or suicide</label></div>
+      <div><label><input type="checkbox" id="tf_chest"> Chest pain or severe breathlessness</label></div>
+      <div><label><input type="checkbox" id="tf_bleed"> Heavy bleeding / sudden weakness</label></div>
+    `;
+  } else if (cat === 'prescription') {
+    area.innerHTML = `
+      <label><strong>Prescription triage</strong></label>
+      <div><label><input type="checkbox" id="tf_allergic"> New rash or suspected allergy to medication</label></div>
+      <div><label><input type="checkbox" id="tf_urgent"> Is this an urgent/acute need (eg. running out within 24 hours)?</label></div>
+    `;
+  } else if (cat === 'test') {
+    area.innerHTML = `
+      <label><strong>Test result triage</strong></label>
+      <div><label><input type="checkbox" id="tf_abnormal"> Severe or worrying result explained to you previously</label></div>
+      <div><label><input type="checkbox" id="tf_symptomRelate"> Related symptoms worsening</label></div>
+    `;
+  } else {
+    area.innerHTML = `<small>Use this for admin requests (appointments, letters).</small>`;
+  }
+}
+
+/* client-side deterministic red-flag check */
+function hasRedFlag(cat) {
+  if (cat === 'symptom') {
+    if (document.getElementById('tf_suicidal')?.checked) return {flag:true, message:'If you feel at risk of harming yourself, call 999 now or go to A&E.'};
+    if (document.getElementById('tf_chest')?.checked) return {flag:true, message:'Chest pain / severe breathlessness — call 999 immediately.'};
+    if (document.getElementById('tf_bleed')?.checked) return {flag:true, message:'Severe bleeding / sudden weakness — call 999 immediately.'};
+  }
+  if (cat === 'prescription') {
+    if (document.getElementById('tf_allergic')?.checked) return {flag:true, message:'You may be having an allergic reaction — call 999 if severe.'};
+  }
+  if (cat === 'test') {
+    if (document.getElementById('tf_symptomRelate')?.checked) return {flag:true, message:'If symptoms are worsening please call 111 or 999 depending on severity.'};
+  }
+  return {flag:false};
+}
+
+/* send message (patient) */
+function sendMessage() {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  if (!currentUser || !currentUser.username) { showNotification('Please login as a patient to send a message','error'); return; }
+
+  const cat = document.getElementById('msgCategory').value;
+  const body = document.getElementById('msgBody').value.trim();
+  const consent = document.getElementById('consentBox').checked;
+
+  // validation
+  if (!consent) { showNotification('Please give consent to record this message', 'error'); return; }
+  if (!body) { showNotification('Please enter a message', 'error'); return; }
+
+  // red flag check
+  const rf = hasRedFlag(cat);
+  if (rf.flag) { showNotification(rf.message, 'error'); return; }
+
+  // rate limit
+  if (tooManyRecentMessages(currentUser.username)) {
+    showNotification('You have reached the message limit (3 messages in 7 days). Please wait or contact the practice by phone.', 'error');
+    return;
+  }
+
+  // Create message object
+  const messages = loadMessages();
+  const id = genId();
+  const created = nowISO();
+  const triageAnswers = {}; // capture checked triage answers
+  document.querySelectorAll('#triageArea input[type=checkbox]').forEach(cb => triageAnswers[cb.id] = cb.checked);
+
+  const message = {
+    id,
+    patient: currentUser.username,
+    category: cat,
+    subject: body.split('\n')[0].slice(0,80),
+    body,
+    triage_answers: triageAnswers,
+    consent_given: true,
+    status: 'new',
+    priority: 'normal',
+    created_at: created,
+    updated_at: created,
+    assigned_to: null,
+    sla_deadline: new Date(Date.now() + 48*3600*1000).toISOString()
+  };
+
+  messages.push(message);
+  saveMessages(messages);
+
+  appendEvent(id, 'patient', currentUser.username, 'created', {category:cat});
+  showNotification('Message sent. We aim to reply within 48 hours.', 'success');
+
+  // reset form + reload
+  document.getElementById('msgBody').value = '';
+  document.getElementById('consentBox').checked = false;
+  renderTriageForCategory();
+  loadPatientMessages();
+
+  // Notify staff (in real app, call server to notify staff)
+}
+
+/* load recent patient messages */
+function loadPatientMessages() {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  const container = document.getElementById('patientMessagesList');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const msgs = loadMessages().filter(m => m.patient === currentUser.username).sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+  if (msgs.length === 0) { container.innerHTML = '<p>No messages yet.</p>'; return; }
+
+  msgs.forEach(m => {
+    const div = document.createElement('div');
+    div.className = 'appointment-item';
+    div.innerHTML = `
+      <div style="flex:1;">
+        <strong>${m.subject}</strong>
+        <div style="font-size:12px;color:#666;">${m.category} • ${new Date(m.created_at).toLocaleString()}</div>
+        <div style="margin-top:6px;">${m.body}</div>
+        <div style="font-size:12px; margin-top:6px;">Status: <span class="status-badge status-${m.status}">${m.status}</span></div>
+      </div>
+      <div style="margin-left:10px; text-align:right;">
+        <button class="btn-small" onclick="viewPatientMessage('${m.id}')">View</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+/* view single patient message detail (simple) */
+function viewPatientMessage(id) {
+  const msgs = loadMessages();
+  const m = msgs.find(x => x.id === id);
+  if (!m) return;
+  const detail = `
+    <h4>${m.subject}</h4>
+    <p><strong>Category:</strong> ${m.category}</p>
+    <p><strong>Sent:</strong> ${new Date(m.created_at).toLocaleString()}</p>
+    <p>${m.body}</p>
+    <hr>
+    <h5>Events</h5>
+    ${loadEvents().filter(e => e.messageId === id).map(e => `<div style="font-size:12px;color:#666;">${e.ts} — ${e.actorType}:${e.actorId} — ${e.event}</div>`).join('')}
+  `;
+  // show in modal-like notification for simplicity
+  showNotification(detail, 'info');
+}
+
+/* ---------- Staff inbox functions (Admin) ---------- */
+function showStaffInbox() {
+  document.getElementById('staffInbox').classList.remove('hidden');
+  document.getElementById('staffInbox').scrollIntoView({behavior:'smooth'});
+  loadStaffInbox();
+}
+
+function loadStaffInbox() {
+  const queue = document.getElementById('staffQueueFilter')?.value || 'all';
+  const list = document.getElementById('staffMessagesList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  let msgs = loadMessages().slice().sort((a,b) => new Date(b.created_at)-new Date(a.created_at));
+  if (queue !== 'all') msgs = msgs.filter(m => m.category === queue);
+
+  if (msgs.length === 0) { list.innerHTML = '<p>No messages in this queue.</p>'; return; }
+
+  msgs.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'appointment-item';
+    el.innerHTML = `
+      <div style="flex:1;">
+        <strong>${m.subject}</strong>
+        <div style="font-size:12px;color:#666;">${m.patient} • ${m.category} • ${new Date(m.created_at).toLocaleString()}</div>
+        <div style="font-size:12px; margin-top:6px;">Status: <span class="status-badge status-${m.status}">${m.status}</span></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; margin-left:10px;">
+        <button class="btn-small" onclick="openStaffMessageDetail('${m.id}')">Open</button>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function openStaffMessageDetail(id) {
+  const m = loadMessages().find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('staffMessageDetail').style.display = 'block';
+  const content = document.getElementById('staffDetailContent');
+  content.innerHTML = `
+    <h4>${m.subject}</h4>
+    <p><strong>Patient:</strong> ${m.patient} • <strong>Category:</strong> ${m.category}</p>
+    <p><strong>Sent:</strong> ${new Date(m.created_at).toLocaleString()}</p>
+    <p>${m.body}</p>
+    <hr>
+    <div><strong>Triage answers:</strong><pre style="font-size:12px;">${JSON.stringify(m.triage_answers,null,2)}</pre></div>
+    <hr>
+    <div><strong>Events</strong><div id="evtList" style="font-size:12px; color:#666;">${loadEvents().filter(e=>e.messageId===id).map(e=>`${e.ts} — ${e.actorType}:${e.actorId} — ${e.event}`).join('<br>')}</div></div>
+  `;
+  // mark as open if new
+  if (m.status === 'new') {
+    updateMessageStatus(id, 'open');
+  }
+  // store selected id for reply
+  document._selectedMessageId = id;
+  document.getElementById('staffReplyBody').value = '';
+}
+
+function closeStaffDetail() {
+  document.getElementById('staffMessageDetail').style.display = 'none';
+  document._selectedMessageId = null;
+}
+
+function updateMessageStatus(id, status) {
+  const msgs = loadMessages();
+  const idx = msgs.findIndex(x => x.id === id);
+  if (idx === -1) return;
+  msgs[idx].status = status;
+  msgs[idx].updated_at = nowISO();
+  saveMessages(msgs);
+  appendEvent(id, 'system', 'system', `status:${status}`, {});
+  loadStaffInbox();
+  loadPatientMessages();
+}
+
+function assignToMe() {
+  const id = document._selectedMessageId;
+  const current = JSON.parse(localStorage.getItem('currentUser')||'{}');
+  const msgs = loadMessages();
+  const idx = msgs.findIndex(x=>x.id===id);
+  if (idx === -1) return;
+  msgs[idx].assigned_to = current.username || 'admin';
+  msgs[idx].updated_at = nowISO();
+  saveMessages(msgs);
+  appendEvent(id, 'staff', current.username || 'admin', 'assigned', {});
+  openStaffMessageDetail(id);
+}
+
+/* Staff sends a reply; in a real app this would create a message record and notify patient */
+function staffReply() {
+  const id = document._selectedMessageId;
+  if (!id) return showNotification('No message selected','error');
+  const body = document.getElementById('staffReplyBody').value.trim();
+  if (!body) return showNotification('Enter reply text','error');
+
+  const msgs = loadMessages();
+  const idx = msgs.findIndex(x=>x.id===id);
+  if (idx === -1) return;
+  // create an event storing staff reply; also change status to 'waiting' (waiting patient)
+  const current = JSON.parse(localStorage.getItem('currentUser')||'{}');
+  appendEvent(id, 'staff', current.username || 'admin', 'reply', { body });
+  // Optionally store the reply inside message as replies array
+  msgs[idx].replies = msgs[idx].replies || [];
+  msgs[idx].replies.push({ by: current.username || 'admin', body, ts: nowISO() });
+  msgs[idx].status = 'waiting';
+  msgs[idx].updated_at = nowISO();
+  saveMessages(msgs);
+
+  // Optionally: send notification to patient (in real app -> push/email/SMS)
+  appendEvent(id, 'system', 'system', 'patient_notified', { method:'in-app' });
+
+  showNotification('Reply sent and patient notified (demo).', 'success');
+  loadStaffInbox();
+  closeStaffDetail();
+  loadPatientMessages();
+}
+
+function closeMessageStaff() {
+  const id = document._selectedMessageId;
+  if (!id) return;
+  updateMessageStatus(id, 'closed');
+  appendEvent(id, 'staff', JSON.parse(localStorage.getItem('currentUser')||'{}').username || 'admin', 'closed', {});
+  showNotification('Message marked closed', 'info');
+}
+
+/* quick template insertion */
+document.getElementById('replyTemplate')?.addEventListener('change', function() {
+  const v = this.value;
+  const box = document.getElementById('staffReplyBody');
+  if (!box) return;
+  if (v === 'prescApproved') box.value = 'Your repeat prescription has been authorised and will be sent to your nominated pharmacy.';
+  if (v === 'needMoreInfo') box.value = 'Thanks — could you please tell us how long you have had the symptoms and any medication you are taking?';
+  if (v === 'adminReply') box.value = 'Your appointment has been updated. Please check details in your portal.';
+});
+
+function openAdminMessages() {
+  // hide other admin UI
+  document.getElementById('adminDashboard').classList.add('hidden');
+  
+  // show messages page
+  document.getElementById('adminMessagesPage').classList.remove('hidden');
+
+  loadAdminMessages();
+}
+
+function loadAdminMessages() {
+  const list = document.getElementById('adminMessagesList');
+  list.innerHTML = '';
+
+  const msgs = loadMessages().filter(m => m.status !== 'closed'); // only open chats
+  
+  if (msgs.length === 0) {
+    list.innerHTML = "<p>No open chats.</p>";
+    return;
+  }
+
+  msgs.forEach(msg => {
+    const div = document.createElement('div');
+    div.className = "appointment-item";
+    div.style.cursor = "pointer";
+
+    div.innerHTML = `
+      <div>
+        <strong>${msg.subject}</strong>
+        <div style="font-size:12px; color:#666;">
+          ${msg.patient} • ${msg.category} • ${new Date(msg.created_at).toLocaleString()}
+        </div>
+      </div>
+      <button class="btn-small">Open Chat</button>
+    `;
+
+    // clicking opens the detailed inbox view (staff inbox)
+    div.onclick = () => {
+      // show full staff inbox (message detail view)
+      showStaffInbox();
+      openStaffMessageDetail(msg.id);
+    };
+
+    list.appendChild(div);
+  });
+}
+
+function backToAdminHome() {
+  document.getElementById('adminMessagesPage').classList.add('hidden');
+  document.getElementById('adminDashboard').classList.remove('hidden');
+}
         
         function showAdminDashboard() {
 loadAdminAppointments();
@@ -1073,6 +1554,18 @@ loadAdminAppointments();
             document.getElementById('patientPortal').classList.add('hidden');
             document.getElementById('adminDashboard').classList.remove('hidden');
         }
+
+function showStaffInbox() {
+  document.getElementById('adminDashboard').classList.add('hidden');
+  document.getElementById('staffInbox').classList.remove('hidden');
+  loadStaffInbox();
+}
+
+function backToAdminHome() {
+  document.getElementById('staffInbox').classList.add('hidden');
+  document.getElementById('staffMessageDetail').style.display = 'none';
+  document.getElementById('adminDashboard').classList.remove('hidden');
+}
 
 function loadAdminAppointments() {
     const table = document.getElementById("appointmentsTableBody");
@@ -1329,6 +1822,7 @@ function goFromSymptomCheckerToBooking() {
     document.getElementById('symptomChecker').classList.add('hidden');
     document.getElementById('prescriptionsPage').classList.add('hidden'); // ⭐ FIX
     document.getElementById('mentalHealthPage').classList.add('hidden');
+    document.getElementById('messagesPage').classList.add('hidden');
 }
         
         function selectType(element, type) {
